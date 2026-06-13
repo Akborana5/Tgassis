@@ -39,7 +39,7 @@
           "assistant_bot": "worker1",
           "mime_type": "video/x-matroska",
           "filename": "avengers_endgame_1080p.mkv",
-          "local_path": "/tmp/pytest-of-runner/pytest-1/test_stream_supports_range_hea0/sample.bin"
+          "local_path": "/tmp/pytest-of-runner/pytest-0/test_stream_supports_range_hea0/sample.bin"
         }
       ],
       "created_at": "2026-06-13T11:01:02.799737"

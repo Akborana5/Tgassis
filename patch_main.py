@@ -1,93 +1,10 @@
-from __future__ import annotations
+import re
 
-from pathlib import Path
+with open('/home/runner/work/Tgassis/Tgassis/Akborana5/Tgassis/backend/app/main.py', 'r') as f:
+    content = f.read()
 
-from contextlib import asynccontextmanager
-import asyncio
-
-from fastapi import FastAPI, Header, HTTPException, Query
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
-from starlette import status
-
-from .indexer import indexer
-from .models import AdminActionResponse, MediaFile, MediaType
-from .search import search_service
-from .storage import store
-from .streaming import file_chunk_iterator, parse_range, telegram_chunk_iterator
-from .workers import worker_pool
-from .tmdb import tmdb_client
-from .config import settings
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await worker_pool.initialize()
-    task = asyncio.create_task(indexer.run_forever())
-    yield
-    task.cancel()
-    await worker_pool.close()
-
-app = FastAPI(title="Telegram Media Search + Streaming API", version="0.1.0", lifespan=lifespan)
-
-
-@app.get("/search")
-def search_media(q: str = Query("", min_length=0), page: int = 1, page_size: int = 20):
-    return search_service.search(q, store.all(), page=page, page_size=min(page_size, 100))
-
-
-@app.get("/movie/{media_id}")
-def movie_details(media_id: str):
-    item = store.get(media_id)
-    if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Media not found")
-    return item
-
-
-@app.get("/recent")
-def recent_media(limit: int = 20):
-    return store.all()[:limit]
-
-
-@app.get("/anime")
-def anime_items(limit: int = 20):
-    return store.by_type(MediaType.anime)[:limit]
-
-
-@app.get("/movies")
-def movie_items(limit: int = 20):
-    return store.by_type(MediaType.movie)[:limit]
-
-
-@app.get("/series")
-def series_items(limit: int = 20):
-    return store.by_type(MediaType.series)[:limit]
-
-
-@app.get("/thumb/{media_id}")
-async def thumb(media_id: str):
-    item = store.get(media_id)
-    if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Media not found")
-        
-    poster_path = Path(item.poster) if item.poster else settings.thumbs_dir / f"{media_id}.jpg"
-    
-    if poster_path.exists():
-        return FileResponse(poster_path)
-        
-    # Try TMDB
-    poster_bytes = await tmdb_client.fetch_poster(item.title, item.year)
-    if poster_bytes:
-        poster_path.write_bytes(poster_bytes)
-        # Update item poster reference if it wasn't set
-        if not item.poster:
-            item.poster = str(poster_path)
-            store.upsert(item)
-        return FileResponse(poster_path)
-
-    placeholder = {"id": media_id, "title": item.title, "placeholder": True}
-    return JSONResponse(content=placeholder)
-
-
-
+# Replace _resolve_file and the route handlers
+new_routing_code = """
 def _resolve_file(media_id: str) -> MediaFile:
     item = store.get(media_id)
     if not item or not item.files:
@@ -177,18 +94,9 @@ async def download(media_id: str, range_header: str | None = Header(None, alias=
         headers=headers, 
         media_type=media_type
     )
-@app.post("/admin/rebuild", response_model=AdminActionResponse)
-async def admin_rebuild():
-    worker = await worker_pool.next_worker()
-    return AdminActionResponse(status="queued", detail=f"Search rebuild queued on {worker.name}")
+"""
 
+content = re.sub(r'def _resolve_file\(.*?(?=@app\.post\("/admin/rebuild")', new_routing_code, content, flags=re.DOTALL | re.MULTILINE)
 
-@app.post("/admin/rescan", response_model=AdminActionResponse)
-async def admin_rescan():
-    worker = await worker_pool.next_worker()
-    return AdminActionResponse(status="queued", detail=f"Channel rescan queued on {worker.name}")
-
-
-@app.get("/admin/workers")
-async def workers_status():
-    return {"workers": await worker_pool.status()}
+with open('/home/runner/work/Tgassis/Tgassis/Akborana5/Tgassis/backend/app/main.py', 'w') as f:
+    f.write(content)

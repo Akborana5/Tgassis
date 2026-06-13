@@ -8,22 +8,62 @@ export default async function MediaDetails({ params }: { params: Promise<{ id: s
 
   return (
     <main className="mx-auto min-h-screen max-w-4xl p-6 md:p-10">
-      <Link href="/" className="text-sm text-blue-600">← Back to search</Link>
-      <h1 className="mt-4 text-3xl font-bold">{media.title}</h1>
-      <p className="mt-2 text-zinc-500">{media.description || "No description available"}</p>
+      <Link href="/" className="text-sm text-blue-600 hover:underline">← Back to search</Link>
+      
+      <div className="mt-8 flex flex-col md:flex-row gap-8">
+        {/* Poster / Details */}
+        <div className="flex-none w-full md:w-1/3">
+          <div className="aspect-[2/3] w-full rounded-lg bg-zinc-200 overflow-hidden shadow-md">
+            {/* We will rely on an img tag for poster */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={`${api}/thumb/${id}`} 
+              alt={media.title}
+              className="w-full h-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+        </div>
+        
+        {/* Info & Player */}
+        <div className="flex-1">
+          <h1 className="text-4xl font-bold">{media.title}</h1>
+          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">{media.description || "No description available"}</p>
 
-      <div className="mt-6 grid gap-2 text-sm">
-        <p><strong>Year:</strong> {media.year ?? "Unknown"}</p>
-        <p><strong>Genres:</strong> {media.genre.join(", ") || "Unknown"}</p>
-        <p><strong>Languages:</strong> {media.languages.join(", ") || "Unknown"}</p>
-        <p><strong>Qualities:</strong> {media.qualities.join(", ") || "Unknown"}</p>
-        <p><strong>Versions:</strong> {media.versions.join(", ") || "Unknown"}</p>
-        <p><strong>Runtime:</strong> {media.runtime ? `${media.runtime} min` : "Unknown"}</p>
-      </div>
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        <a href={`${api}/stream/${id}`} className="rounded bg-black px-4 py-2 text-white">Watch Now</a>
-        <a href={`${api}/download/${id}`} className="rounded border border-black px-4 py-2">Download</a>
+          <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-zinc-700 dark:text-zinc-300">
+            <div><span className="font-semibold text-black dark:text-white">Year:</span> {media.year ?? "Unknown"}</div>
+            <div><span className="font-semibold text-black dark:text-white">Runtime:</span> {media.runtime ? `${media.runtime} min` : "Unknown"}</div>
+            <div><span className="font-semibold text-black dark:text-white">Genres:</span> {media.genre.join(", ") || "Unknown"}</div>
+            <div><span className="font-semibold text-black dark:text-white">Languages:</span> {media.languages.join(", ") || "Unknown"}</div>
+            <div><span className="font-semibold text-black dark:text-white">Qualities:</span> {media.qualities.join(", ") || "Unknown"}</div>
+            <div><span className="font-semibold text-black dark:text-white">Versions:</span> {media.versions.join(", ") || "Unknown"}</div>
+          </div>
+          
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Watch Now</h2>
+            <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg">
+              <video 
+                controls 
+                className="w-full h-full"
+                poster={`${api}/thumb/${id}`}
+              >
+                <source src={`${api}/stream/${id}`} type="video/mp4" />
+                <source src={`${api}/stream/${id}`} type="video/x-matroska" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            
+            <div className="mt-4 flex gap-4">
+              <a 
+                href={`${api}/download/${id}`} 
+                download
+                className="inline-flex items-center justify-center rounded-lg bg-black dark:bg-white text-white dark:text-black px-6 py-3 font-semibold transition-transform hover:scale-105 active:scale-95"
+              >
+                Download File
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

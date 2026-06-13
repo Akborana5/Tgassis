@@ -6,6 +6,7 @@ from threading import Lock
 import orjson
 
 from .config import settings
+from .huggingface import hf_sync
 from .models import MediaItem, MediaType
 
 
@@ -14,6 +15,7 @@ class MediaStore:
         self.path = path
         self.lock = Lock()
         self._media: dict[str, MediaItem] = {}
+        hf_sync.sync_database_down()
         self._ensure_seed()
         self._load()
 
@@ -77,6 +79,8 @@ class MediaStore:
     def _save(self) -> None:
         data = {"items": [item.model_dump(mode="json") for item in self._media.values()]}
         self.path.write_bytes(orjson.dumps(data, option=orjson.OPT_INDENT_2))
+        import asyncio
+        asyncio.get_event_loop().run_in_executor(None, hf_sync.sync_database_up)
 
     def all(self) -> list[MediaItem]:
         return sorted(self._media.values(), key=lambda i: i.created_at, reverse=True)
