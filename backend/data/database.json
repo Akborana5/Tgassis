@@ -1,0 +1,83 @@
+{
+  "items": [
+    {
+      "id": "avengers-endgame-2019",
+      "title": "Avengers Endgame",
+      "year": 2019,
+      "description": "After the Snap, the Avengers assemble for one final mission.",
+      "genre": [
+        "Action",
+        "Sci-Fi"
+      ],
+      "qualities": [
+        "480p",
+        "720p",
+        "1080p"
+      ],
+      "languages": [
+        "English",
+        "Hindi"
+      ],
+      "versions": [
+        "Original",
+        "Dual Audio"
+      ],
+      "media_type": "movie",
+      "poster": null,
+      "runtime": 181,
+      "seasons": [],
+      "episodes": [],
+      "files": [
+        {
+          "telegram_channel": "MoviesDB",
+          "message_id": 1001,
+          "quality": "1080p",
+          "language": "English",
+          "codec": "x265",
+          "source": "WEB-DL",
+          "size": 2147483648,
+          "assistant_bot": "worker1",
+          "mime_type": "video/x-matroska",
+          "filename": "avengers_endgame_1080p.mkv",
+          "local_path": "/tmp/pytest-of-runner/pytest-1/test_stream_supports_range_hea0/sample.bin"
+        }
+      ],
+      "created_at": "2026-06-13T11:01:02.799737"
+    },
+    {
+      "id": "one-piece",
+      "title": "One Piece",
+      "year": 1999,
+      "description": "Straw Hat pirates chase the greatest treasure.",
+      "genre": [
+        "Anime",
+        "Adventure"
+      ],
+      "qualities": [
+        "720p",
+        "1080p"
+      ],
+      "languages": [
+        "Japanese",
+        "English"
+      ],
+      "versions": [
+        "Subbed",
+        "Dubbed"
+      ],
+      "media_type": "anime",
+      "poster": null,
+      "runtime": null,
+      "seasons": [
+        1
+      ],
+      "episodes": [
+        1,
+        2,
+        3
+      ],
+      "files": [],
+      "created_at": "2026-06-13T11:01:02.799752"
+    }
+  ]
+}
